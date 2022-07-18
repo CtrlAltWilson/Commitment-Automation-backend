@@ -103,12 +103,15 @@ def getAgents(fk):
             })
             r = res.json()
             agents = []
+            roi = []
             for agent in r['agentStates']:
                 if agent['agentStateName'] == "Available":
-                    #print(agent)
-                    agents.append(agent['firstName'])
+                    if agent['teamName'] == "Support":
+                        agents.append(agent['firstName'])
+                    elif "roi" in agent['teamName'].casefold():
+                        roi.append(agent['firstName'])
             print("Available Agents({}): {}".format(len(agents),agents))
-            return [agents,len(agents)]
+            return [agents,len(agents),roi]
         except Exception as e:
             print(str(e))
             getRequest(fk)

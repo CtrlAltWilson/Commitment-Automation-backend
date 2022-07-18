@@ -17,6 +17,7 @@ try:
     from src.sf_time import isTime, checkTime
     from src.rc import getAgents,createCommit, getCommits,deleteCommit
     from src.togglecheck import togglecheck, checkautorun
+    from src.logs import log
     from src.credentials import \
         client_id,              \
         client_secret,          \
@@ -33,6 +34,7 @@ except:
     from sf_time import isTime, checkTime
     from togglecheck import togglecheck, checkautorun
     from rc import getAgents, createCommit, getCommits,deleteCommit
+    from logs import log
     from credentials import     \
         client_id,              \
         client_secret,          \
@@ -63,7 +65,7 @@ def main():
     if stopped == 1:
         return
     if getRequest(auth_url,client_id,client_secret,cm_user,cm_pass,access_token) != 200:
-        print("Error accessing database")
+        log("Error accessing database")
         return
 
     session = requests.Session()
@@ -74,11 +76,9 @@ def main():
         sf = Salesforce(username=cm_user,password=cm_pass,security_token=access_token,client_id=client_id,session=session)
     except Exception as e:
         if "INVALID_LOGIN" in str(e):
-            print("Incorrect credentials")
+            log("Incorrect credentials")
     #desc = sf.Account.describe()
     #field_names=[field['name'] for field in desc['fields']]
-
-    #SELECT Id,AccountId,CaseNumber,ContactId,Description,OwnerId,PHone__c,Status,Dialer_Status__c,Sub_Category__c FROM Case WHERE Status = 'Waiting Call Back - 1st Attempt' AND Dialer_Status__c = '{global:RecordStatus}' AND At_Dialer__c = FALSE LIMIT {global:recordlimit}
 
     sf_data = caseQuery(sf,query)
 
@@ -100,16 +100,16 @@ def main():
         castime = isTime(record['LastModifiedDate'])
         description = record['Description'].casefold()
         subject = record['Subject'].casefold()
-        for word in blacklist:
-            if word in description or word in subject:
-                appendcase = 1
-                bword = word
-        if record['Status'] == 'New':
+        if record['Status'] == "New":
             isNew = 1
+            for word in blacklist:
+                if word in description or word in subject:
+                    appendcase = 1
+                    bword = word
         if phone == 0:
-            print("{} has no number!".format(record['CaseNumber']))
+            log("{} has no number!".format(record['CaseNumber']))
         if appendcase == 1:
-            print("{} has a blacklisted word: {}".format(record['CaseNumber'],bword))
+            log("{} has a blacklisted word: {}".format(record['CaseNumber'],bword))
         if phone != 0 and appendcase == 0:
             cases.append([record['CaseNumber'],record['SuppliedName'],record['Platform__c'],record['LastModifiedDate'],castime,phone,isNew,record])
             globsf.append(record['CaseNumber'])
@@ -139,12 +139,13 @@ def logs(text):
         f.write(text)
 
 def timeAlert(text):
+    log(text)
     ui.label_alert.setText(text)
     ui.label_alert.repaint()
     deltimer.start(3000)
 
 def addtoList():
-    print("getting commits")
+    log("getting commits")
     commits = getCommits(fern)
     agents = getAgents(fern)
     ui.list_commitments.clearSelection()
@@ -165,14 +166,14 @@ def addtoList():
         )
     ui.num_agents.display(agents[1])
 
-def deletefromlist(fern):
+def deletefromlist():
     try:
         selected = ui.list_commitments.currentItem().text()
         selected = selected.split("\t")
         deleteCommit(selected[0],fern)
         addtoList()
     except:
-        print("Nothing to delete!")
+        log("Nothing to delete!")
         ui.label_delete_alert.setText("Nothing\nto delete!")
         ui.label_delete_alert.repaint()
         deltimer.start(1000)
@@ -197,10 +198,12 @@ def threadworker():
 
 def threadbuffer():
     global maintimer, start
-    print("Starting")
+    timeAlert("Starting...")
     recent_update = checkTime()
     if recent_update[1] == 1:
         timeAlert("It's past 4PM! No more commits will be created!")
+    elif start == 1:
+        timeAlert("I'm already running!")
     else:
         start = 1
         maintimer = QTimer()
@@ -215,13 +218,13 @@ app = QtWidgets.QApplication([])
 deltimer = QTimer()
 deltimer.timeout.connect(delete_alert)
 
-try:
-    window = uic.loadUi("gui.ui")
-    ui = window
-except:
-    window = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(window)
+#try:
+#    window = uic.loadUi("gui.ui")
+#    ui = window
+#except:
+window = QtWidgets.QMainWindow()
+ui = Ui_MainWindow()
+ui.setupUi(window)
 
 window.setWindowTitle("Commitment Manager")
 ui.btn_startstop.clicked.connect(threadbuffer)

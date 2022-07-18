@@ -92,7 +92,7 @@ alternate-background-color:  rgb(106, 106, 106);</string>
     <property name="geometry">
      <rect>
       <x>220</x>
-      <y>40</y>
+      <y>30</y>
       <width>121</width>
       <height>21</height>
      </rect>
@@ -113,7 +113,7 @@ alternate-background-color:  rgb(106, 106, 106);</string>
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>20</y>
+      <y>10</y>
       <width>81</width>
       <height>23</height>
      </rect>
@@ -136,7 +136,7 @@ alternate-background-color:  rgb(106, 106, 106);</string>
     <property name="geometry">
      <rect>
       <x>220</x>
-      <y>20</y>
+      <y>10</y>
       <width>81</width>
       <height>23</height>
      </rect>
@@ -153,7 +153,7 @@ alternate-background-color:  rgb(106, 106, 106);</string>
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>40</y>
+      <y>30</y>
       <width>121</width>
       <height>21</height>
      </rect>
@@ -174,7 +174,7 @@ alternate-background-color:  rgb(106, 106, 106);</string>
     <property name="geometry">
      <rect>
       <x>370</x>
-      <y>20</y>
+      <y>10</y>
       <width>81</width>
       <height>23</height>
      </rect>
@@ -191,7 +191,7 @@ alternate-background-color:  rgb(106, 106, 106);</string>
     <property name="geometry">
      <rect>
       <x>390</x>
-      <y>40</y>
+      <y>30</y>
       <width>51</width>
       <height>21</height>
      </rect>
@@ -325,6 +325,50 @@ alternate-background-color:  rgb(106, 106, 106);</string>
      <string/>
     </property>
    </widget>
+   <widget class="QLabel" name="queue_title_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>51</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);
+background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:1 rgba(0, 0, 0, 0));</string>
+    </property>
+    <property name="text">
+     <string>Queue</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="queue_title_3">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>60</y>
+      <width>51</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);
+background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:1 rgba(0, 0, 0, 0));</string>
+    </property>
+    <property name="text">
+     <string>Support</string>
+    </property>
+   </widget>
    <zorder>checkbox_autorun</zorder>
    <zorder>list_commitments</zorder>
    <zorder>title_agents</zorder>
@@ -341,6 +385,8 @@ alternate-background-color:  rgb(106, 106, 106);</string>
    <zorder>label_update_time</zorder>
    <zorder>list_agents</zorder>
    <zorder>label_alert</zorder>
+   <zorder>queue_title_2</zorder>
+   <zorder>queue_title_3</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

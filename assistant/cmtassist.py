@@ -15,8 +15,10 @@ def addtoList():
     agents = getAgents(fern)
     ui.list_commitments.clearSelection()
     ui.list_agents.clearSelection()
+    ui.list_roi.clearSelection()
     ui.list_commitments.clear()
     ui.list_agents.clear()
+    ui.list_roi.clear()
     if commits != 0 or commits != []:
         for i in range(len(commits)):
             QtWidgets.QListWidgetItem(
@@ -28,6 +30,11 @@ def addtoList():
         QtWidgets.QListWidgetItem(
             "{}".format(agent),
             ui.list_agents
+        )
+    for agent in agents[2]:
+        QtWidgets.QListWidgetItem(
+            "{}".format(agent),
+            ui.list_roi
         )
     recent_update = checkTime()
     ui.num_agents.display(agents[1])

@@ -25,3 +25,16 @@ gui2.py
 *.html
 build/cmtmgr_3_0/warn-cmtmgr_3_0.txt
 build/cmtmgr_3_0/pyimod00_crypto_key.py
+assistant/build/cmtassist_3_01/pyimod00_crypto_key.py
+assistant/build/cmtassist_3_01/warn-cmtassist_3_01.txt
+assistant/build/cmtassist_3_1/pyimod00_crypto_key.py
+*.txt
+*.exe
+build/cmtmgr_3_01/pyimod00_crypto_key.py
+build/cmtmgr_3_02/pyimod00_crypto_key.py
+build/cmtmgr_3_03/pyimod00_crypto_key.py
+build/cmtmgr_3_04/pyimod00_crypto_key.py
+build/cmtmgr_3_1/pyimod00_crypto_key.py
+managerecord.py
+src/constrants.py
+src/constrants.py

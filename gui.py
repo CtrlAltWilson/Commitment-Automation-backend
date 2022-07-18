@@ -43,14 +43,14 @@ class Ui_MainWindow(object):
         self.btn_delete.setStyleSheet("color: rgb(255, 255, 255);background-color: rgb(144, 144, 144);")
         self.btn_delete.setObjectName("btn_delete")
         self.title_agents = QtWidgets.QLabel(self.centralwidget)
-        self.title_agents.setGeometry(QtCore.QRect(220, 40, 121, 21))
+        self.title_agents.setGeometry(QtCore.QRect(220, 30, 121, 21))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.title_agents.setFont(font)
         self.title_agents.setStyleSheet("color: rgb(255, 255, 255);")
         self.title_agents.setObjectName("title_agents")
         self.num_commits = QtWidgets.QLCDNumber(self.centralwidget)
-        self.num_commits.setGeometry(QtCore.QRect(70, 20, 81, 23))
+        self.num_commits.setGeometry(QtCore.QRect(70, 10, 81, 23))
         self.num_commits.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.num_commits.setAutoFillBackground(False)
         self.num_commits.setStyleSheet("QLCDNumber{\n"
@@ -60,7 +60,7 @@ class Ui_MainWindow(object):
 "")
         self.num_commits.setObjectName("num_commits")
         self.num_agents = QtWidgets.QLCDNumber(self.centralwidget)
-        self.num_agents.setGeometry(QtCore.QRect(220, 20, 81, 23))
+        self.num_agents.setGeometry(QtCore.QRect(220, 10, 81, 23))
         self.num_agents.setStyleSheet("QLCDNumber{\n"
 "    background-color: rgb(68, 68, 68);\n"
 "    color: rgb(0, 0, 0)\n"
@@ -68,14 +68,14 @@ class Ui_MainWindow(object):
 "")
         self.num_agents.setObjectName("num_agents")
         self.title_commits = QtWidgets.QLabel(self.centralwidget)
-        self.title_commits.setGeometry(QtCore.QRect(60, 40, 121, 21))
+        self.title_commits.setGeometry(QtCore.QRect(60, 30, 121, 21))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.title_commits.setFont(font)
         self.title_commits.setStyleSheet("color: rgb(255, 255, 255);")
         self.title_commits.setObjectName("title_commits")
         self.num_queue = QtWidgets.QLCDNumber(self.centralwidget)
-        self.num_queue.setGeometry(QtCore.QRect(370, 20, 81, 23))
+        self.num_queue.setGeometry(QtCore.QRect(370, 10, 81, 23))
         self.num_queue.setStyleSheet("QLCDNumber{\n"
 "    background-color: rgb(68, 68, 68);\n"
 "    color: rgb(0, 0, 0)\n"
@@ -83,7 +83,7 @@ class Ui_MainWindow(object):
 "")
         self.num_queue.setObjectName("num_queue")
         self.queue_title = QtWidgets.QLabel(self.centralwidget)
-        self.queue_title.setGeometry(QtCore.QRect(390, 40, 51, 21))
+        self.queue_title.setGeometry(QtCore.QRect(390, 30, 51, 21))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.queue_title.setFont(font)
@@ -132,6 +132,22 @@ class Ui_MainWindow(object):
         self.label_alert.setStyleSheet("color: rgb(255, 255, 255);")
         self.label_alert.setText("")
         self.label_alert.setObjectName("label_alert")
+        self.queue_title_2 = QtWidgets.QLabel(self.centralwidget)
+        self.queue_title_2.setGeometry(QtCore.QRect(10, 60, 51, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.queue_title_2.setFont(font)
+        self.queue_title_2.setStyleSheet("color: rgb(255, 255, 255);\n"
+"background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:1 rgba(0, 0, 0, 0));")
+        self.queue_title_2.setObjectName("queue_title_2")
+        self.queue_title_3 = QtWidgets.QLabel(self.centralwidget)
+        self.queue_title_3.setGeometry(QtCore.QRect(380, 60, 51, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.queue_title_3.setFont(font)
+        self.queue_title_3.setStyleSheet("color: rgb(255, 255, 255);\n"
+"background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:1 rgba(0, 0, 0, 0));")
+        self.queue_title_3.setObjectName("queue_title_3")
         self.checkbox_autorun.raise_()
         self.list_commitments.raise_()
         self.title_agents.raise_()
@@ -148,6 +164,8 @@ class Ui_MainWindow(object):
         self.label_update_time.raise_()
         self.list_agents.raise_()
         self.label_alert.raise_()
+        self.queue_title_2.raise_()
+        self.queue_title_3.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 521, 21))
@@ -171,6 +189,8 @@ class Ui_MainWindow(object):
         self.queue_title.setText(_translate("MainWindow", "Queue"))
         self.btn_stop.setText(_translate("MainWindow", "■"))
         self.label_update.setText(_translate("MainWindow", "Last Update:"))
+        self.queue_title_2.setText(_translate("MainWindow", "Queue"))
+        self.queue_title_3.setText(_translate("MainWindow", "Support"))
 
 
 if __name__ == "__main__":

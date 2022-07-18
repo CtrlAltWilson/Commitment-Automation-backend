@@ -31,14 +31,14 @@ class Ui_MainWindow(object):
         self.btn_delete.setStyleSheet("color: rgb(255, 255, 255);background-color: rgb(144, 144, 144);")
         self.btn_delete.setObjectName("btn_delete")
         self.title_agents = QtWidgets.QLabel(self.centralwidget)
-        self.title_agents.setGeometry(QtCore.QRect(220, 40, 121, 21))
+        self.title_agents.setGeometry(QtCore.QRect(140, 30, 121, 21))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.title_agents.setFont(font)
         self.title_agents.setStyleSheet("color: rgb(255, 255, 255);")
         self.title_agents.setObjectName("title_agents")
         self.num_agents = QtWidgets.QLCDNumber(self.centralwidget)
-        self.num_agents.setGeometry(QtCore.QRect(220, 20, 81, 23))
+        self.num_agents.setGeometry(QtCore.QRect(140, 10, 81, 23))
         self.num_agents.setStyleSheet("QLCDNumber{\n"
 "    background-color: rgb(68, 68, 68);\n"
 "    color: rgb(0, 0, 0)\n"
@@ -46,7 +46,7 @@ class Ui_MainWindow(object):
 "")
         self.num_agents.setObjectName("num_agents")
         self.num_queue = QtWidgets.QLCDNumber(self.centralwidget)
-        self.num_queue.setGeometry(QtCore.QRect(370, 20, 81, 23))
+        self.num_queue.setGeometry(QtCore.QRect(290, 10, 81, 23))
         self.num_queue.setStyleSheet("QLCDNumber{\n"
 "    background-color: rgb(68, 68, 68);\n"
 "    color: rgb(0, 0, 0)\n"
@@ -54,7 +54,7 @@ class Ui_MainWindow(object):
 "")
         self.num_queue.setObjectName("num_queue")
         self.queue_title = QtWidgets.QLabel(self.centralwidget)
-        self.queue_title.setGeometry(QtCore.QRect(390, 40, 51, 21))
+        self.queue_title.setGeometry(QtCore.QRect(310, 30, 51, 21))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.queue_title.setFont(font)
@@ -84,13 +84,45 @@ class Ui_MainWindow(object):
         self.label_update_time.setText("")
         self.label_update_time.setObjectName("label_update_time")
         self.list_agents = QtWidgets.QListWidget(self.centralwidget)
-        self.list_agents.setGeometry(QtCore.QRect(380, 80, 131, 201))
+        self.list_agents.setGeometry(QtCore.QRect(380, 80, 131, 101))
         self.list_agents.setStyleSheet("background-color:rgb(65, 65, 65);\n"
 "color: rgb(255, 255, 255);\n"
 "selection-color: rgb(0, 0, 0);\n"
 "selection-background-color:rgb(138, 138, 138);  \n"
 "alternate-background-color:  rgb(106, 106, 106);")
         self.list_agents.setObjectName("list_agents")
+        self.list_roi = QtWidgets.QListWidget(self.centralwidget)
+        self.list_roi.setGeometry(QtCore.QRect(380, 200, 131, 81))
+        self.list_roi.setStyleSheet("background-color:rgb(65, 65, 65);\n"
+"color: rgb(255, 255, 255);\n"
+"selection-color: rgb(0, 0, 0);\n"
+"selection-background-color:rgb(138, 138, 138);  \n"
+"alternate-background-color:  rgb(106, 106, 106);")
+        self.list_roi.setObjectName("list_roi")
+        self.queue_title_2 = QtWidgets.QLabel(self.centralwidget)
+        self.queue_title_2.setGeometry(QtCore.QRect(10, 60, 51, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.queue_title_2.setFont(font)
+        self.queue_title_2.setStyleSheet("color: rgb(255, 255, 255);\n"
+"background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:1 rgba(0, 0, 0, 0));")
+        self.queue_title_2.setObjectName("queue_title_2")
+        self.queue_title_3 = QtWidgets.QLabel(self.centralwidget)
+        self.queue_title_3.setGeometry(QtCore.QRect(380, 180, 51, 21))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.queue_title_3.setFont(font)
+        self.queue_title_3.setStyleSheet("color: rgb(255, 255, 255);\n"
+"background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:1 rgba(0, 0, 0, 0));")
+        self.queue_title_3.setObjectName("queue_title_3")
+        self.queue_title_4 = QtWidgets.QLabel(self.centralwidget)
+        self.queue_title_4.setGeometry(QtCore.QRect(380, 60, 51, 20))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.queue_title_4.setFont(font)
+        self.queue_title_4.setStyleSheet("color: rgb(255, 255, 255);\n"
+"background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:1 rgba(0, 0, 0, 0));")
+        self.queue_title_4.setObjectName("queue_title_4")
         self.list_commitments.raise_()
         self.title_agents.raise_()
         self.queue_title.raise_()
@@ -101,6 +133,10 @@ class Ui_MainWindow(object):
         self.label_update.raise_()
         self.label_update_time.raise_()
         self.list_agents.raise_()
+        self.list_roi.raise_()
+        self.queue_title_2.raise_()
+        self.queue_title_3.raise_()
+        self.queue_title_4.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 521, 21))
@@ -120,6 +156,9 @@ class Ui_MainWindow(object):
         self.title_agents.setText(_translate("MainWindow", "Agents Available"))
         self.queue_title.setText(_translate("MainWindow", "Queue"))
         self.label_update.setText(_translate("MainWindow", "Last Update:"))
+        self.queue_title_2.setText(_translate("MainWindow", "Queue"))
+        self.queue_title_3.setText(_translate("MainWindow", "ROI"))
+        self.queue_title_4.setText(_translate("MainWindow", "Support"))
 
 
 if __name__ == "__main__":

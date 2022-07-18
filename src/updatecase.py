@@ -1,3 +1,8 @@
+try:
+    from src.logs import log
+except: 
+    from logs import log
+
 def updatecase(sf,record):
     try:
         id = record['Id']
@@ -13,7 +18,9 @@ def updatecase(sf,record):
 
         if status == "New":
             sf.Case.update(id,{'Status':'Scheduled Support Call'})
-        if record['Sub_Category__c'] == "":    
+        #log(record)
+        #log("category c is ",record['Sub_Category__c'])
+        if record['Sub_Category__c'] is None:    
             if "barcode" in description:
                 cate = 'Kiosk'
                 subcate = 'Self-Service Kiosk'
@@ -35,4 +42,4 @@ def updatecase(sf,record):
             else:
                 sf.Case.update(id,{'Platform__c':'Raptor 6'})
     except Exception as e:
-        print(str(e))
+        log(str(e))

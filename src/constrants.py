@@ -109,6 +109,7 @@ ContactEmail,
 LastModifiedDate,
 Platform__c,
 Specific_Issue__c,
+Sub_Category__c,
 Description,
 Subject
 
