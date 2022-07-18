@@ -32,5 +32,6 @@ def getRequest(fk):
             with open('rc_token.WILSON','wb') as f:
                 f.write(k)
             return 1
-        except:
+        except Exception as e:
+            log(str(e))
             retry += 1
