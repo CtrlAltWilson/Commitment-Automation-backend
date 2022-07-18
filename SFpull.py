@@ -227,6 +227,10 @@ ui = Ui_MainWindow()
 ui.setupUi(window)
 
 window.setWindowTitle("Commitment Manager")
+
+#remove titlebar
+#window.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+
 ui.btn_startstop.clicked.connect(threadbuffer)
 ui.list_commitments.setAlternatingRowColors(True)
 ui.btn_delete.clicked.connect(deletefromlist)
