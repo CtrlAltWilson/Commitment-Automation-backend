@@ -7,6 +7,8 @@ def log(text, text2 = None):
     to_zone = pytz.timezone('America/Chicago')
     now = datetime.now(to_zone)
     new_time = now.strftime("%Y-%d-%m %I:%M %p")
-    print(text)
+    
+    print("{}: {}".format(new_time,text))
+
     with open("logs.txt","a") as f:
         f.write("{}: {}\n".format(new_time,text))

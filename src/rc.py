@@ -6,18 +6,21 @@ try:
     from src.sf_time import getTime,getRCTime
     from src.updatecase import updatecase
     from src.logs import log
+    from src.sf_time import checkBlackout
+    from src.togglecheck import getMinutes, setMinutes
 except:
     from rc_creds import getRequest
     from sf_time import getTime,getRCTime
     from updatecase import updatecase
     from logs import log
+    from sf_time import checkBlackout
+    from togglecheck import getMinutes, setMinutes
 
 config = None
 SSKillID = 	'4271306'
 
 def main(fk):
     global config
-    log(fk)
     try:
         with open('rc_token.WILSON','r',encoding='utf-8') as f:
             code = bytes(f.read(), 'utf-8')
@@ -31,13 +34,16 @@ def main(fk):
     config = json.loads(config)
 
 def createCommit(arr,fk):
-    log("creating commits")
+    if len(arr[0]) == 0:
+        return
+    log("Creating commits({})".format(len(arr[0])))
     retry = 0
     cases = arr[0]
     agents = arr[1]
     sf = arr[2]
-    minutes = 2
+    #minutes = 2
     count = 0
+    isblackout = checkBlackout()
     while retry < 3:
         try:
             main(fk)
@@ -47,13 +53,24 @@ def createCommit(arr,fk):
                 k = checkCommits(case[0],case[5],fk)
                 #log((case[4] == 1 or case[6] == 1))# and case[5] != 0 and k == 1)
                 if (case[4] == 1 or case[6] == 1) and case[5] != 0 and k == 1:
-                    if agents != 0:
-                        agents -= 1
-                        minutes += 2
+                    minutes = getMinutes()
+                    if isblackout == 0:
+                        if agents != 0:
+                            agents -= 1
+                            minutes += 2
+                        else:
+                            minutes += 12
+                        if minutes > 60:
+                            minutes = (minutes%5)+1
                     else:
-                        minutes += 12
-                    if minutes > 65:
-                        minutes = (minutes%5)+1
+                        if agents != 0:
+                            agents -= 1
+                            minutes += 2
+                        else:
+                            minutes += 30
+                        if minutes > 120:
+                            minutes = (minutes%5)+1
+                    setMinutes(minutes)
                     log("Setting commit for ", case[0])
                     updatecase(sf,case[7])
                     newtime = getTime(minutes)
@@ -97,6 +114,7 @@ def deleteCommit(case,fk):
     return 0
 
 def getCommits(fk):
+    log("Getting commits")
     retry = 0
     while retry < 3:
         try:
@@ -110,6 +128,7 @@ def getCommits(fk):
             #log(r)
             queue = []
             for i in r['callbacks']:
+                #print('notes',i['notes'])
                 #log(i['firstName'])
                 queue.append([i['firstName'],i['lastName'],getRCTime(i['callbackTime'])])
             return queue
@@ -118,7 +137,6 @@ def getCommits(fk):
             getRequest(fk)
             retry += 1
     return 0
-#log(getCommits())
 
 #TODO merge this with getcommit later
 def checkCommits(case,phone,fk):

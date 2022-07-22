@@ -10,12 +10,14 @@ def getRequest(url,cid,cs,u,p,token):
 #    })
 
     #json_res = response.json()
+    try:
+        auth = {'Authorization': 'Bearer ' + token}
 
-    auth = {'Authorization': 'Bearer ' + token}
+        #instance_url = json_res['instance_url']
 
-    #instance_url = json_res['instance_url']
-
-    #url = instance_url + '/services/data/v45.0/sobjects/contact/describe'
-    res = requests.get(url, headers=auth)
-    r = res.status_code
-    return r
+        #url = instance_url + '/services/data/v45.0/sobjects/contact/describe'
+        res = requests.get(url, headers=auth)
+        r = res.status_code
+        return r
+    except:
+        return 0

@@ -369,6 +369,27 @@ background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:1 rgb
      <string>Support</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label_status">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>290</y>
+      <width>61</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
    <zorder>checkbox_autorun</zorder>
    <zorder>list_commitments</zorder>
    <zorder>title_agents</zorder>
@@ -380,13 +401,14 @@ background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:1 rgb
    <zorder>num_commits</zorder>
    <zorder>btn_delete</zorder>
    <zorder>btn_stop</zorder>
-   <zorder>btn_startstop</zorder>
    <zorder>label_update</zorder>
    <zorder>label_update_time</zorder>
    <zorder>list_agents</zorder>
    <zorder>label_alert</zorder>
    <zorder>queue_title_2</zorder>
    <zorder>queue_title_3</zorder>
+   <zorder>label_status</zorder>
+   <zorder>btn_startstop</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

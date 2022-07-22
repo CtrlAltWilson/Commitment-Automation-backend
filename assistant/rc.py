@@ -10,7 +10,7 @@ SSKillID = 	'4271306'
 #keep
 def main(fk):
     global config
-    print(fk)
+    #print(fk)
     try:
         with open('rc_token.WILSON','r',encoding='utf-8') as f:
             code = bytes(f.read(), 'utf-8')

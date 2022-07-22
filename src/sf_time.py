@@ -45,9 +45,23 @@ def checkTime():
     now = datetime.now(to_zone)
     current_string = [now.strftime('%Y-%m-%d %H:%M')]
     compare_time = now.strftime('%H')
-    if int(compare_time) > 16:
+    bo = checkBlackout()
+    hourstop = 16
+    if bo == 1:
+        hourstop -= 1
+    if int(compare_time) > hourstop:
         current_string.append(1)
     else:
         current_string.append(0)
     return current_string
 
+def checkBlackout():
+    to_zone = pytz.timezone('America/Chicago')
+    now = datetime.now(to_zone)
+    compare_time = now.strftime('%m')
+    if int(compare_time) >= 8 and int(compare_time) <= 10:
+        return 1
+    else:
+        return 0
+
+#print (checkBlackout())

@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
 
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import QTimer,QThreadPool
 from gui import *
 
 from cryptography.fernet import Fernet
-import requests, json,time
+import requests
 from simple_salesforce import Salesforce
 
 try:
     from src.httpstatus import getRequest
-    from src.updatecase import updatecase
     from src.constrants import newQuery,testQuery,getQuery,getSupportQuery,getFilteredSupportQuery
     from src.caseQuery import caseQuery
     from src.phone import getPhone
     from src.sf_time import isTime, checkTime
     from src.rc import getAgents,createCommit, getCommits,deleteCommit
-    from src.togglecheck import togglecheck, checkautorun
+    from src.togglecheck import togglecheck, checkautorun, setMinutes
     from src.logs import log
     from src.credentials import \
         client_id,              \
@@ -25,14 +24,14 @@ try:
         cm_pass,                \
         access_token,           \
         auth_url
-except:
+except Exception as e:
+    print(str(e))
     from httpstatus import getRequest
-    from updatecase import updatecase
     from constrants import newQuery, testQuery,getQuery,getSupportQuery,getFilteredSupportQuery
     from caseQuery import caseQuery
     from phone import getPhone
     from sf_time import isTime, checkTime
-    from togglecheck import togglecheck, checkautorun
+    from togglecheck import togglecheck, checkautorun, setMinutes
     from rc import getAgents, createCommit, getCommits,deleteCommit
     from logs import log
     from credentials import     \
@@ -45,32 +44,39 @@ except:
 
 query = getFilteredSupportQuery
 currentCases = None
+maintimer = None
 globsf = []
 commitscreated = 0
+isRunning = 0
 stopped = 0
 start = 0
-th = None
 blacklist = ["delet","delete","remove","remov"]
-starttime = time.time()
-maintimer = None
 f_key = Fernet.generate_key()
 fern = Fernet(f_key)
 
 def main():
-    global globsf,commitscreated, starttime
-
+    global globsf,commitscreated, isRunning
+    if isRunning == 1:
+        return
+    isRunning = 1
     recent_update = checkTime() 
     if recent_update[1] == 1:
         stopandclear()
     if stopped == 1:
+        log("stopped")
         return
-    if getRequest(auth_url,client_id,client_secret,cm_user,cm_pass,access_token) != 200:
-        log("Error accessing database")
+    try:
+        if getRequest(auth_url,client_id,client_secret,cm_user,cm_pass,access_token) != 200:
+            log("Error accessing database")
+            #return
+    except:
+        log("Error getRequest")
         return
-
     session = requests.Session()
     
-    if stopped == 1: return
+    if stopped == 1: 
+        log("stopped")
+        return
     
     try:
         sf = Salesforce(username=cm_user,password=cm_pass,security_token=access_token,client_id=client_id,session=session)
@@ -88,11 +94,15 @@ def main():
     cases = []
     globsf = []
     bword = None
-    if stopped == 1: return
+    if stopped == 1: 
+        log("stopped")
+        return
 
     for record in records:
-        
-        if stopped == 1: return
+
+        if stopped == 1: 
+            log("stopped")
+            return
 
         isNew = 0
         appendcase = 0
@@ -102,10 +112,11 @@ def main():
         subject = record['Subject'].casefold()
         if record['Status'] == "New":
             isNew = 1
-            for word in blacklist:
-                if word in description or word in subject:
-                    appendcase = 1
-                    bword = word
+            if "delete" not in description and "message" not in description:
+                for word in blacklist:
+                    if word in description or word in subject:
+                        appendcase = 1
+                        bword = word
         if phone == 0:
             log("{} has no number!".format(record['CaseNumber']))
         if appendcase == 1:
@@ -114,7 +125,9 @@ def main():
             cases.append([record['CaseNumber'],record['SuppliedName'],record['Platform__c'],record['LastModifiedDate'],castime,phone,isNew,record])
             globsf.append(record['CaseNumber'])
 
-    if stopped == 1: return
+    if stopped == 1: 
+        log("stopped")
+        return
 
     agents = getAgents(fern)
     packaged_case.append(cases)
@@ -123,8 +136,12 @@ def main():
     #cases.append(agents)
     #cases.append(sf)
     ui.num_agents.display(agents[1])
+    if agents[1] > 1:
+        setMinutes()
 
-    if stopped == 1: return
+    if stopped == 1: 
+        log("stopped")
+        return
     commcount = createCommit(packaged_case,fern)
     commitscreated += commcount
     ui.num_commits.display(commitscreated)
@@ -132,11 +149,10 @@ def main():
 
     recent_update = checkTime() 
     ui.label_update_time.setText(recent_update[0])
-    if stopped == 1: return
-
-def logs(text):
-    with open('logs.txt','w') as f:
-        f.write(text)
+    if stopped == 1: 
+        log("stopped")
+        return
+    isRunning = 0
 
 def timeAlert(text):
     log(text)
@@ -145,9 +161,11 @@ def timeAlert(text):
     deltimer.start(3000)
 
 def addtoList():
-    log("getting commits")
+    log("Updating list")
+
     commits = getCommits(fern)
     agents = getAgents(fern)
+    commits.sort()
     ui.list_commitments.clearSelection()
     ui.list_agents.clearSelection()
     ui.list_commitments.clear()
@@ -184,10 +202,14 @@ def delete_alert():
     deltimer.stop()
 
 def stopandclear():
-    global stopped, start
+    global stopped, start, isRunning
+    log("Stopping...")
+    ui.label_status.setText("Stopping")
     stopped = 1
     start = 0
+    isRunning = 0
     ui.label_delete_alert.clear()
+    ui.label_status.setText("Standby")
 
 def threadworker():
     global stopped
@@ -195,33 +217,29 @@ def threadworker():
         stopped = 0
         QThreadPool.globalInstance().start(main)
 
-
 def threadbuffer():
     global maintimer, start
-    timeAlert("Starting...")
+    #timeAlert("Starting...")
+    ui.label_status.setText("Starting")
     recent_update = checkTime()
     if recent_update[1] == 1:
-        timeAlert("It's past 4PM! No more commits will be created!")
+        timeAlert("It's past time! No more commits will be created!")
+        ui.label_status.setText("Standby")
     elif start == 1:
         timeAlert("I'm already running!")
     else:
+        ui.label_status.setText("Running")
         start = 1
         maintimer = QTimer()
         maintimer.timeout.connect(threadworker)
         threadworker()
         maintimer.start(30000)
 
-
-
 autorun = checkautorun()
 app = QtWidgets.QApplication([])
 deltimer = QTimer()
 deltimer.timeout.connect(delete_alert)
 
-#try:
-#    window = uic.loadUi("gui.ui")
-#    ui = window
-#except:
 window = QtWidgets.QMainWindow()
 ui = Ui_MainWindow()
 ui.setupUi(window)
