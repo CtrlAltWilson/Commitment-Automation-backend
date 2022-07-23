@@ -49,7 +49,7 @@ def checkTime():
     hourstop = 16
     if bo == 1:
         hourstop -= 1
-    if int(compare_time) > hourstop:
+    if int(compare_time) > hourstop or now.weekday() == 5 or now.weekday() == 6:
         current_string.append(1)
     else:
         current_string.append(0)

@@ -43,3 +43,8 @@ assistant/build/cmtassist_3_15/pyimod00_crypto_key.py
 build/cmtmgr_3_13/pyimod00_crypto_key.py
 build/cmtmgr_3_2/pyimod00_crypto_key.py
 build/cmtmgr_3_25/pyimod00_crypto_key.py
+build/cmtmgr_3_26/pyimod00_crypto_key.py
+build/*
+__pycache__/*
+assistant/build/*
+assistant/__pycache__/*
