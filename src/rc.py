@@ -85,6 +85,8 @@ def createCommit(arr,fk):
                     r = res.json()
                     log(r)
                     count += 1
+                    if count >= 5:
+                        return count
             return count
         except Exception as e:
             log("Create Commit: ",str(e))

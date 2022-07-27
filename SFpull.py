@@ -7,6 +7,7 @@ from gui import *
 from cryptography.fernet import Fernet
 import requests
 from simple_salesforce import Salesforce
+from datetime import datetime
 
 try:
     from src.httpstatus import getRequest
@@ -108,7 +109,10 @@ def main():
         appendcase = 0
         phone = getPhone(record['SuppliedPhone'], record['ContactPhone'])
         castime = isTime(record['LastModifiedDate'])
-        description = record['Description'].casefold()
+        if record['Description'] is not None:
+            description = record['Description'].casefold()
+        else:
+            description == ""
         subject = record['Subject'].casefold()
         if record['Status'] == "New":
             isNew = 1
@@ -165,7 +169,7 @@ def addtoList():
 
     commits = getCommits(fern)
     agents = getAgents(fern)
-    commits.sort()
+    #commits.sort()
     ui.list_commitments.clearSelection()
     ui.list_agents.clearSelection()
     ui.list_commitments.clear()
@@ -211,11 +215,16 @@ def stopandclear():
     ui.label_delete_alert.clear()
     ui.label_status.setText("Standby")
 
-def threadworker():
+def threadworker(pulse = 0):
     global stopped
-    if start == 1:
+    if start == 1 and pulse == 0:
         stopped = 0
         QThreadPool.globalInstance().start(main)
+    elif pulse == 1:
+        QThreadPool.globalInstance().start(main)
+
+def pulse():
+    threadworker(1)
 
 def threadbuffer():
     global maintimer, start
@@ -253,6 +262,7 @@ ui.btn_startstop.clicked.connect(threadbuffer)
 ui.list_commitments.setAlternatingRowColors(True)
 ui.btn_delete.clicked.connect(deletefromlist)
 ui.btn_stop.clicked.connect(stopandclear)
+ui.btn_pulse.clicked.connect(pulse)
 ui.checkbox_autorun.setChecked(autorun)
 ui.checkbox_autorun.stateChanged.connect(togglecheck)
 
