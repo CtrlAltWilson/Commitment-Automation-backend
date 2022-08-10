@@ -1,5 +1,6 @@
 import json
 import requests
+from cryptography.fernet import Fernet
 
 try:
     from src.rc_creds import getRequest
@@ -18,6 +19,9 @@ except:
 
 config = None
 SSKillID = 	'4271306'
+
+f_key = Fernet.generate_key()
+fern = Fernet(f_key)
 
 def main(fk):
     global config
@@ -129,10 +133,11 @@ def getCommits(fk):
             r = res.json()
             #log(r)
             queue = []
-            for i in r['callbacks']:
-                #print('notes',i['notes'])
-                #log(i['firstName'])
-                queue.append([i['firstName'],i['lastName'],getRCTime(i['callbackTime'])])
+            if len(r['callbacks']) > 0:
+                for i in r['callbacks']:
+                    #print('notes',i['notes'])
+                    #log(i['firstName'])
+                    queue.append([i['firstName'],i['lastName'],getRCTime(i['callbackTime'])])
             return queue
         except Exception as e:
             log("GetCommits: ",str(e))
@@ -210,4 +215,50 @@ def getAgents(fk):
             retry += 1
     return 0
 
+def clearCallbacks(fk,skill = SSKillID):
+    try:
+        main(fk)
+        log("Getting Callbacks {}".format(skill))
+        auth = {'Authorization': 'Bearer ' + config['access_token']}
+        url = config['resource_server_base_uri'] + 'services/v13.0/contacts/active'
+        res = requests.get(url, headers=auth,json={
+            'skillId':skill
+        })
+        r = res.json()
+        #print(r)
+    
+        for callback in r['resultSet']['activeContacts']:
+            print("Callbacks: ",callback['contactId'],callback['state'])
+            
+            if ((callback['skillName'] == 'Support OB')and callback['state'] == 'CallBack') or (skill != SSKillID and callback['state'] != "Active"):
+                log("Clearing callback {}".format(callback['contactId']))
+                url2 = config['resource_server_base_uri'] + 'services/v13.0/contacts/{}/end'.format(callback['contactId'])
+                res2 = requests.post(url2, headers=auth,json={
+                    'contactId':callback['contactId']
+                })
+                res2.json() 
+                #print(r2)
+        return 1
+    except Exception as e:
+        #log("ClearCallBacks: ",str(e))
+        pass
+    return 0
+
+def clearAllSkills(fk):
+    try:
+        main(fk)
+        log("Getting Agents")
+        auth = {'Authorization': 'Bearer ' + config['access_token']}
+        url = config['resource_server_base_uri'] + 'services/v13.0/skills'
+        res = requests.get(url, headers=auth)
+        r = res.json()
+        for skill in r['skills']:
+            #print(skill['skillId'],skill['skillName'])
+            clearCallbacks(fk,skill['skillId'])
+        return 1
+    except Exception as e:
+        log("clearAllSkills: ",str(e))
+    return 0
+#print(clearAllSkills(fern))
+#print(clearCallbacks(fern))
 #main()

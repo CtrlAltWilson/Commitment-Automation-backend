@@ -1,7 +1,9 @@
 try:
     from src.logs import log
+    from src.caseQuery import caseQuery
 except: 
     from logs import log
+    from caseQuery import caseQuery
 
 def updatecase(sf,record):
     try:
@@ -43,3 +45,43 @@ def updatecase(sf,record):
                 sf.Case.update(id,{'Platform__c':'Raptor 6'})
     except Exception as e:
         log(str(e))
+
+def checkSchStatus(sf,case):
+    query = "SELECT Id, Status FROM Case WHERE CaseNumber = '{}'".format(case)
+    sf_data = caseQuery(sf,query)
+    record = sf_data['records'][0]
+    id = record['Id']
+    if record['Status'] == "Scheduled Support Call":
+        log("Setting {} to new".format(case))
+        sf.Case.update(id,{'Status':'New'})
+    
+
+def resetStatus(sf,commits):
+    query = "SELECT Id, Status, CaseNumber FROM Case WHERE Status = 'Scheduled Support Call' AND Ownerid = '00GU00000018lmTMAQ'"
+    sf_data = caseQuery(sf, query)
+    records = sf_data['records']
+    commit_list = []
+    try:
+        for i in range(len(commits)):
+            commit_list.append(commits[i][0].strip())
+        #print("commitlist ",commit_list)
+        for record in records:
+            if record['CaseNumber'] not in commit_list:
+                log("Case {} not in commit queue, setting back to new".format(record['CaseNumber']))
+                sf.Case.update(record['Id'],{'Status':'New'})
+    except:
+        pass
+    
+    newStatus(sf,commit_list)
+
+def newStatus(sf,commits):
+    try:
+        query = "SELECT Id, Status, CaseNumber FROM Case WHERE Status = 'New' AND Ownerid = '00GU00000018lmTMAQ'"
+        sf_data = caseQuery(sf, query)
+        records = sf_data['records']
+        for record in records:
+            if record['CaseNumber'] in commits:
+                log("Case {} in commit queue but not updated, updating to Scheduled".format(record['CaseNumber']))
+                sf.Case.update(record['Id'],{'Status':'Scheduled Support Call'})
+    except:
+        pass

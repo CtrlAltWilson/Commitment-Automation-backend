@@ -122,9 +122,51 @@ AND
 (
     Status = 'New' OR 
     Status = 'Scheduled Support Call' OR 
-    Status LIKE 'Waiting Call Back%' OR 
+    Status = 'Waiting Call Back - 2nd Attempt' OR 
     Status = 'Pending Information From Client'
 )
+AND
+(NOT ContactEmail LIKE '%@raptortech.com')
+AND
+(NOT ContactEmail LIKE '%@lobbyguard.com')
+AND
+(NOT ContactEmail LIKE '%@vsoft.uservoice.com')
+AND
+(NOT Subject LIKE '%Installation Request%')
+AND
+ContactId != ''
+
+ORDER BY
+LastModifiedDate
+
+"""
+#    Status LIKE 'Waiting Call Back%' OR 
+
+getFilteredSupportQueryNEWONLY = """
+SELECT
+Id,
+Status,
+CaseNumber,
+ContactId,
+SuppliedName,
+PHone__c,
+SuppliedPhone,
+ContactPhone,
+ContactEmail,
+LastModifiedDate,
+Platform__c,
+Specific_Issue__c,
+Sub_Category__c,
+Description,
+Subject
+
+FROM
+Case
+
+WHERE
+Ownerid = '00GU00000018lmTMAQ'
+AND
+Status = 'New'
 AND
 (NOT ContactEmail LIKE '%@raptortech.com')
 AND
