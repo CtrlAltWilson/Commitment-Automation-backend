@@ -1,19 +1,19 @@
 import dateutil.parser, pytz
 from datetime import datetime, timedelta
 
-def isTime(timestamp):
+def isTime(timestamp, ho = 3):
     last_mod_time = dateutil.parser.parse(timestamp)
     last_mod_time -= timedelta(hours=5)
     #date_format_string = last_mod_time.strftime("%Y-%m-%d %H:%M:%S")
 
-    last_mod_newtime = last_mod_time + timedelta(hours=3)
+    last_mod_newtime = last_mod_time + timedelta(hours=ho)
 
 
     to_zone = pytz.timezone('America/Chicago')
     now = datetime.now(to_zone)
 
-    last_mod_string = last_mod_newtime.strftime('%Y-%m-%d %H:%M:%S')
-    current_string = now.strftime('%Y-%m-%d %H:%M:%S')
+    #last_mod_string = last_mod_newtime.strftime('%Y-%m-%d %H:%M:%S')
+    #current_string = now.strftime('%Y-%m-%d %H:%M:%S')
 
     last_mod_date = last_mod_newtime.strftime('%m-%d')
     current_date = now.strftime('%m-%d')

@@ -9,7 +9,6 @@ import requests
 from simple_salesforce import Salesforce
 from datetime import datetime
 
-
 try:
     from src.httpstatus import getRequest
     from src.constrants import newQuery,testQuery,getQuery,getSupportQuery,getFilteredSupportQuery,getFilteredSupportQueryNEWONLY
@@ -19,7 +18,7 @@ try:
     from src.rc import getAgents,createCommit, getCommits,deleteCommit, clearCallbacks, clearAllSkills
     from src.togglecheck import togglecheck, checkautorun, setMinutes
     from src.logs import log
-    from src.updatecase import checkSchStatus, resetStatus
+    from src.updatecase import checkSchStatus, resetStatus,second_attempt
     from src.credentials import \
         client_id,              \
         client_secret,          \
@@ -36,7 +35,7 @@ except Exception as e:
     from sf_time import isTime, checkTime
     from togglecheck import togglecheck, checkautorun, setMinutes
     from rc import getAgents, createCommit, getCommits,deleteCommit, clearCallbacks, clearAllSkills
-    from updatecase import checkSchStatus, resetStatus
+    from updatecase import checkSchStatus, resetStatus,second_attempt
     from logs import log
     from credentials import     \
         client_id,              \
@@ -59,28 +58,30 @@ pulse = 0
 blacklist = ["delet","delete","remove","remov"]
 f_key = Fernet.generate_key()
 fern = Fernet(f_key)
-max_commits = 5
+max_commits = 4
 
 def main():
     global globsf,commitscreated, isRunning,pulse
-    recent_update = checkTime() 
-    if recent_update[1] == 1:
-        #clearAllSkills(fern)
-        stopandclear()
     if stopped == 1:
         log("stopped")
         return
+    
+    recent_update = checkTime() 
     commits = getCommits(fern)
+
+    if sf == None:
+        setSF()
+
     if isRunning == 1 and pulse == 0:
         pass
     elif len(commits) > max_commits and pulse == 0:
         log("Commits limited to {}, there are currently {} in queue.".format(max_commits,len(commits)))
-        addtoList()
-    else:
+    elif recent_update[1] == 1 and pulse == 0:
+        ui.label_status.setText("Idle")
+    elif len(commits) < max_commits:
         pulse = 0
         isRunning = 1
-        if sf == None:
-            setSF()
+
         #desc = sf.Account.describe()
         #field_names=[field['name'] for field in desc['fields']]
         query = getFilteredSupportQuery
@@ -154,11 +155,15 @@ def main():
         except:
             pass
         ui.num_commits.display(commitscreated)
-        addtoList()
 
         if stopped == 1: 
             log("stopped")
             return
+    #second_attempt(sf)
+    addtoList()
+    if stopped == 1: 
+        log("stopped")
+        return
     isRunning = 0
 
 def setSF():
@@ -182,18 +187,22 @@ def setSF():
         if "INVALID_LOGIN" in str(e):
             log("Incorrect credentials")
 
-def timeAlert(text):
+def timeAlert(text, timerset = 3000):
     log(text)
     ui.label_alert.setText(text)
     ui.label_alert.repaint()
-    deltimer.start(3000)
+    deltimer.start(timerset)
 
 def addtoList():
     log("Updating list")
     commits = getCommits(fern)
     if sf == None:
         setSF()
-    resetStatus(sf,commits)
+    try:
+        resetStatus(sf,commits)
+    except:
+        setSF()
+        resetStatus(sf,commits)
     agents = getAgents(fern)
     #commits.sort()
     ui.list_commitments.clearSelection()
@@ -215,6 +224,7 @@ def addtoList():
     ui.num_agents.display(agents[1])
     recent_update = checkTime() 
     ui.label_update_time.setText(recent_update[0])
+    second_attempt(sf)
     clearCallbacks(fern)
 
 def deletefromlist():
@@ -255,11 +265,16 @@ def threadworker(apulse = 0):
     elif apulse == 1:
         pulse = 1
         QThreadPool.globalInstance().start(main)
+    elif apulse == 2:
+        QThreadPool.globalInstance().start(addtoList)
 
 def pulse():
     ui.label_status.setText("Pulsing")
     threadworker(1)
     ui.label_status.setText("Standby")
+
+def refresh():
+    threadworker(2)
 
 def threadbuffer():
     global maintimer, start
@@ -269,11 +284,15 @@ def threadbuffer():
     if recent_update[1] == 1:
         timeAlert("It's past time! No more commits will be created!")
         #clearAllSkills(fern)
-        ui.label_status.setText("Standby")
-    elif start == 1:
+        #ui.label_status.setText("Standby")
+    if start == 1:
         timeAlert("I'm already running!")
     else:
-        ui.label_status.setText("Running")
+        if recent_update[1] == 1:
+            timeAlert("It's past time! No more commits will be created!")
+            ui.label_status.setText("Idle")
+        else:
+            ui.label_status.setText("Running")
         start = 1
         maintimer = QTimer()
         maintimer.timeout.connect(threadworker)
@@ -284,7 +303,7 @@ autorun = checkautorun()
 app = QtWidgets.QApplication([])
 deltimer = QTimer()
 deltimer.timeout.connect(delete_alert)
-
+log("Starting UI")
 window = QtWidgets.QMainWindow()
 ui = Ui_MainWindow()
 ui.setupUi(window)
@@ -300,15 +319,17 @@ ui.list_commitments.setAlternatingRowColors(True)
 ui.btn_delete.clicked.connect(deletefromlist)
 ui.btn_stop.clicked.connect(stopandclear)
 ui.btn_pulse.clicked.connect(pulse)
-ui.btn_refresh.clicked.connect(addtoList)
+ui.btn_refresh.clicked.connect(refresh)
 
 ui.checkbox_autorun.setChecked(autorun)
 ui.checkbox_autorun.stateChanged.connect(togglecheck)
 
 setMinutes()
-addtoList()
+threadworker(2)
+#addtoList()
 
 if autorun == True:
     threadbuffer()
+log("UI Complete")
 window.show()
 app.exec()

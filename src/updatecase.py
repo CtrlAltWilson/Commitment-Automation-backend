@@ -1,9 +1,11 @@
 try:
     from src.logs import log
     from src.caseQuery import caseQuery
+    from src.sf_time import isTime
 except: 
     from logs import log
     from caseQuery import caseQuery
+    from sf_time import isTime
 
 def updatecase(sf,record):
     try:
@@ -85,3 +87,15 @@ def newStatus(sf,commits):
                 sf.Case.update(record['Id'],{'Status':'Scheduled Support Call'})
     except:
         pass
+
+def second_attempt(sf):
+    query = "SELECT Id, LastModifiedDate, CaseNumber FROM Case WHERE Status = 'Waiting Call Back - 1st Attempt' AND Ownerid = '00GU00000018lmTMAQ'"
+    sf_data = caseQuery(sf, query)
+    records = sf_data['records']
+    for record in records:
+        checkTime = isTime(record['LastModifiedDate'], ho = 12)
+        if checkTime == 1:
+            log("Sending Second Attempt Email for case {}".format(record['CaseNumber']))
+            ID = record['Id']
+            sf.Case.update(ID,{'Waiting_Call_Back_1st_Attempt_Email_Sent__c':True})
+            sf.Case.update(ID,{'Status':'Waiting Call Back - 2nd Attempt'})

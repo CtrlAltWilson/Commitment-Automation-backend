@@ -6,10 +6,10 @@ from src.credentials import client_secret
 #console:
 #   python3 -m PyInstaller --onefile --clean --icon=Logo_b.ico --add-data "assets/Logo_b.ico;." main.py -n cmtmgr
 
-version = "3.31"
+version = "3.58"
 debug = 0
 getver = version.split('.')
-noconsole = 1
+noconsole = 0
 
 
 if debug == 1:
