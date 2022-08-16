@@ -49,3 +49,4 @@ __pycache__/*
 assistant/build/*
 assistant/__pycache__/*
 *.csv
+createexe_manage.py
