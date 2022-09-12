@@ -6,7 +6,7 @@ from src.credentials import client_secret
 #console:
 #   python3 -m PyInstaller --onefile --clean --icon=Logo_b.ico --add-data "assets/Logo_b.ico;." main.py -n cmtmgr
 
-version = "3.58"
+version = "3.85"
 debug = 0
 getver = version.split('.')
 noconsole = 0
@@ -36,3 +36,5 @@ if noconsole == 1:
 time.sleep(5)
 
 PyInstaller.__main__.run(console)
+
+#python3 -m PyQt5.uic.pyuic -x gui_control.ui -o gui_control.py

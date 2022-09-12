@@ -93,9 +93,25 @@ def second_attempt(sf):
     sf_data = caseQuery(sf, query)
     records = sf_data['records']
     for record in records:
-        checkTime = isTime(record['LastModifiedDate'], ho = 12)
+        checkTime = isTime(record['LastModifiedDate'], ho = 3)
         if checkTime == 1:
             log("Sending Second Attempt Email for case {}".format(record['CaseNumber']))
             ID = record['Id']
             sf.Case.update(ID,{'Waiting_Call_Back_1st_Attempt_Email_Sent__c':True})
             sf.Case.update(ID,{'Status':'Waiting Call Back - 2nd Attempt'})
+
+def third_attempt(sf):
+    query = "SELECT Id, LastModifiedDate, CaseNumber, ContactId FROM Case WHERE Status = 'Waiting Call Back - 2nd Attempt' AND Ownerid = '00GU00000018lmTMAQ'"
+    sf_data = caseQuery(sf, query)
+    records = sf_data['records']
+    for record in records:
+        checkTime = isTime(record['LastModifiedDate'], ho = 3)
+        if checkTime == 1:
+            log("Sending Third Attempt Email for case {}".format(record['CaseNumber']))
+            ID = record['Id']
+            contact_id = record['ContactId']
+            contact = sf.Contact.get(contact_id)
+            temp_email = contact['Email']
+            sf.Contact.update(contact_id,{'Email':''})
+            sf.Case.update(ID,{'Status':'Closed - Client Unresponsive'})
+            sf.Contact.update(contact_id,{'Email':temp_email})
