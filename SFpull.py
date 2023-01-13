@@ -71,6 +71,7 @@ elif gui_version == 2:
 
 def main():
     global globsf,commitscreated, isRunning,pulse
+    log("Starting Main")
     if stopped == 1:
         log("stopped")
         return

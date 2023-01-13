@@ -7,6 +7,8 @@ except:
     from caseQuery import caseQuery
     from sf_time import isTime
 
+import threading
+
 def updatecase(sf,record):
     try:
         id = record['Id']
@@ -89,29 +91,39 @@ def newStatus(sf,commits):
         pass
 
 def second_attempt(sf):
+    def secondattemptemail(record):
+        log("Sending Second Attempt Email for case {}".format(record['CaseNumber']))
+        ID = record['Id']
+        sf.Case.update(ID,{'Waiting_Call_Back_1st_Attempt_Email_Sent__c':True})
+        sf.Case.update(ID,{'Status':'Waiting Call Back - 2nd Attempt'})
+
     query = "SELECT Id, LastModifiedDate, CaseNumber FROM Case WHERE Status = 'Waiting Call Back - 1st Attempt' AND Ownerid = '00GU00000018lmTMAQ'"
     sf_data = caseQuery(sf, query)
     records = sf_data['records']
     for record in records:
         checkTime = isTime(record['LastModifiedDate'], ho = 3)
         if checkTime == 1:
-            log("Sending Second Attempt Email for case {}".format(record['CaseNumber']))
-            ID = record['Id']
-            sf.Case.update(ID,{'Waiting_Call_Back_1st_Attempt_Email_Sent__c':True})
-            sf.Case.update(ID,{'Status':'Waiting Call Back - 2nd Attempt'})
+            k1 = threading.Thread(target=secondattemptemail,args=[record])
+            k1.start()
 
 def third_attempt(sf):
-    query = "SELECT Id, LastModifiedDate, CaseNumber, ContactId FROM Case WHERE Status = 'Waiting Call Back - 2nd Attempt' AND Ownerid = '00GU00000018lmTMAQ'"
+    def thirdattempemail(record):
+        log("Sending Third Attempt Email for case {}".format(record['CaseNumber']))
+        ID = record['Id']
+        if record['Platform__c'] is None:
+            sf.Case.update(ID,{'Platform__c':'Raptor 6'})
+        contact_id = record['ContactId']
+        contact = sf.Contact.get(contact_id)
+        temp_email = contact['Email']
+        sf.Contact.update(contact_id,{'Email':''})
+        sf.Case.update(ID,{'Status':'Closed - Client Unresponsive'})
+        sf.Contact.update(contact_id,{'Email':temp_email})
+
+    query = "SELECT Id, LastModifiedDate, CaseNumber, ContactId,Platform__c FROM Case WHERE Status = 'Waiting Call Back - 2nd Attempt' AND Ownerid = '00GU00000018lmTMAQ'"
     sf_data = caseQuery(sf, query)
     records = sf_data['records']
     for record in records:
         checkTime = isTime(record['LastModifiedDate'], ho = 3)
         if checkTime == 1:
-            log("Sending Third Attempt Email for case {}".format(record['CaseNumber']))
-            ID = record['Id']
-            contact_id = record['ContactId']
-            contact = sf.Contact.get(contact_id)
-            temp_email = contact['Email']
-            sf.Contact.update(contact_id,{'Email':''})
-            sf.Case.update(ID,{'Status':'Closed - Client Unresponsive'})
-            sf.Contact.update(contact_id,{'Email':temp_email})
+            k1 = threading.Thread(target=thirdattempemail,args=[record])
+            k1.start()
